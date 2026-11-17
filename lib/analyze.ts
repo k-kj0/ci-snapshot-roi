@@ -41,7 +41,7 @@ export type Report = {
 
 export async function analyzeRepo(owner: string, repo: string): Promise<Report> {
   const data = await gh(`/repos/${owner}/${repo}/actions/runs?status=success&per_page=${RUNS_TO_SAMPLE}`);
-  const runs: any[] = data.workflow_runs ?? [];
+  const runs: any[] = (data.workflow_runs ?? []).filter((r: any) => r.event !== "dynamic" && !String(r.path ?? "").startsWith("dynamic/"));
   if (runs.length < 3) throw new Error("Not enough successful workflow runs to analyse. Try a busier repo.");
 
   const times = runs.map((r) => Date.parse(r.created_at));
