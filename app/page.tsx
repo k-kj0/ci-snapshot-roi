@@ -1,28 +1,29 @@
 "use client";
-import { useMemo, useState } from "react";
-import { estimateROI, money, type Platform, type RunnerSize } from "@/lib/roi";
-const initial = { platform: "ubuntu-x64" as Platform, size: "16x" as RunnerSize, jobsPerMonth: 1000, coldRuntimeMinutes: 20, setupMinutesSaved: 8, snapshotBootMinutes: 0.75, activeSnapshots: 1, storageHoursPerSnapshot: 720 };
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) { return <label className="field"><span className="field-label">{label}</span>{children}{hint && <small>{hint}</small>}</label>; }
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import "./receipt.css";
+
 export default function Home() {
- const [values,setValues]=useState(initial); const result=useMemo(()=>estimateROI(values),[values]);
- const update=<K extends keyof typeof initial>(key:K,value:(typeof initial)[K])=>setValues(current=>({...current,[key]:value}));
- const recommendation=result.recommendation==="use"?"Snapshots look worthwhile":result.recommendation==="avoid"?"Skip snapshots for this workflow":"More data needed";
- return <main className="shell"><nav className="topbar"><div className="brand"><span className="brand-mark">W</span><span>snapshot<span className="brand-light">/roi</span></span></div><span className="top-note"><i/> Decision support for CI teams</span></nav>
- <section className="hero"><div className="eyebrow"><span className="eyebrow-line"/> WARPBUILD WORKFLOW ECONOMICS</div><h1>Should this workflow<br/><em>use snapshots?</em></h1><p className="hero-copy">Snapshots can make CI faster. They can also cost more than they save. Model the trade-off before you ship the config.</p></section>
- <section className="workspace"><div className="panel inputs-panel"><div className="panel-head"><div><span className="step">01 / INPUTS</span><h2>Describe your workflow</h2></div><span className="edit-tag">EDIT ASSUMPTIONS</span></div><div className="form-grid">
- <Field label="Runner platform" hint="Snapshots currently support WarpBuild Cloud Ubuntu."><select value={values.platform} onChange={e=>update("platform",e.target.value as Platform)}><option value="ubuntu-x64">Ubuntu x64 · WarpBuild Cloud</option><option value="ubuntu-arm64">Ubuntu ARM64 · WarpBuild Cloud</option><option value="windows">Windows</option><option value="macos">macOS</option><option value="byoc">BYOC · AWS / GCP / Azure</option></select></Field>
- <Field label="Runner size"><select value={values.size} onChange={e=>update("size",e.target.value as RunnerSize)}>{(["2x","4x","8x","16x","32x"] as RunnerSize[]).map(s=><option key={s} value={s}>{s.replace("x"," vCPU")}</option>)}</select></Field>
- <Field label="Jobs per month" hint="Total workflow jobs, not workflow runs."><input type="number" min="0" value={values.jobsPerMonth} onChange={e=>update("jobsPerMonth",Number(e.target.value))}/></Field>
- <Field label="Current job duration" hint="Typical cold-run duration, in minutes."><input type="number" min="0" step="0.5" value={values.coldRuntimeMinutes} onChange={e=>update("coldRuntimeMinutes",Number(e.target.value))}/></Field>
- <Field label="Setup time avoided" hint="Dependency install, checkout, image pulls, caches."><input type="number" min="0" step="0.5" value={values.setupMinutesSaved} onChange={e=>update("setupMinutesSaved",Number(e.target.value))}/></Field>
- <Field label="Snapshot boot overhead" hint="Extra boot time, in minutes."><input type="number" min="0" step="0.05" value={values.snapshotBootMinutes} onChange={e=>update("snapshotBootMinutes",Number(e.target.value))}/></Field>
- <Field label="Active snapshot aliases" hint="Aliases kept warm / stored."><input type="number" min="0" value={values.activeSnapshots} onChange={e=>update("activeSnapshots",Number(e.target.value))}/></Field>
- <Field label="Storage hours per alias" hint="720 hours is approximately 30 days."><input type="number" min="0" value={values.storageHoursPerSnapshot} onChange={e=>update("storageHoursPerSnapshot",Number(e.target.value))}/></Field>
- </div><div className="assumption-note"><span>i</span><p>Estimates use runner rates, a $0.04 snapshot restore charge per job, and $0.025 per snapshot-hour. Verify current pricing before making a purchasing decision.</p></div></div>
- <aside className="panel result-panel"><div className="panel-head"><div><span className="step">02 / DECISION</span><h2>Monthly estimate</h2></div><span className="live-tag"><i/> LIVE MODEL</span></div><div className="decision"><span className="decision-label">RECOMMENDATION</span><h3>{recommendation}</h3><p>{result.explanation}</p></div>
- <div className="savings-block"><span>ESTIMATED MONTHLY SAVINGS</span><strong className={result.monthlySavings>=0?"positive":"negative"}>{money(result.monthlySavings)}</strong><small>{result.savingsPercent.toFixed(1)}% vs. current runner spend</small></div>
- <div className="cost-list"><div><span>Without snapshots</span><b>{money(result.baselineRunnerCost)}</b></div><div><span>Snapshot runner time</span><b>{money(result.snapshotRunnerCost)}</b></div><div><span>Restore charges</span><b>{money(result.restoreCost)}</b></div><div><span>Snapshot storage</span><b>{money(result.storageCost)}</b></div><div className="total"><span>With snapshots · total</span><b>{money(result.snapshotTotal)}</b></div></div>
- <div className="break-even"><span>BREAK-EVEN SETUP SAVING</span><strong>{result.breakEvenSetupMinutes.toFixed(2)} min / job</strong></div><button className="reset" onClick={()=>setValues(initial)}>Reset example values <span>↺</span></button></aside></section>
- <section className="insight"><div className="insight-icon">↗</div><div><span className="step">THE IMPORTANT BIT</span><h2>A faster workflow isn’t automatically a cheaper workflow.</h2><p>Snapshot restore and storage fees are part of the equation. A low-volume or short-running job may be better served by ordinary dependency caching.</p></div></section>
- <footer><span>SNAPSHOT / ROI</span><span>Independent prototype · Not an official WarpBuild product</span><span>Built to make CI trade-offs visible.</span></footer></main>;
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+  function go(v?: string) {
+    const cleaned = (v ?? value).trim().replace(/^https?:\/\/github\.com\//, "").replace(/\/$/, "");
+    const [owner, repo] = cleaned.split("/");
+    if (!owner || !repo) { setError("Enter a repo like facebook/react"); return; }
+    router.push(`/r/${owner}/${repo}`);
+  }
+  return (
+    <main className="rc-home">
+      <h1>CI Receipt</h1>
+      <p>Paste any public GitHub repo. Get an itemised receipt of its repeated CI setup time, with an honest verdict on whether snapshots would help.</p>
+      <div className="rc-form">
+        <input placeholder="owner/repo  (e.g. facebook/react)" value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => e.key === "Enter" && go()} />
+        <button onClick={() => go()}>Print receipt</button>
+      </div>
+      {error && <div className="rc-error">{error}</div>}
+      <p><a className="rc-link" href="/leaderboard">See receipts for famous repos</a></p>
+      <small>Independent prototype. Not affiliated with WarpBuild or GitHub.</small>
+    </main>
+  );
 }
