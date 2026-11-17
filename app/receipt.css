@@ -28,3 +28,9 @@ body { background:#0c1110; color:#edf4ef; font-family:system-ui,sans-serif; marg
 .rc-list { list-style:none; padding:0; text-align:left; }
 .rc-list li { padding:10px 0; border-bottom:1px solid var(--border); }
 .rc-list a { color:var(--green); text-decoration:none; }
+.mg-file { border:1px solid var(--border); border-radius:8px; padding:14px; margin:14px 0; font-family:ui-monospace,monospace; font-size:12px; }
+.mg-name { font-weight:700; margin-bottom:8px; }
+.mg-line { color:var(--muted); font-size:10px; margin-top:8px; }
+.mg-del { background:#3a1f1f; color:#ff9d91; padding:3px 8px; }
+.mg-add { background:#16301f; color:#9ce6b3; padding:3px 8px; }
+.rc-home code { background:#16201b; padding:1px 5px; border-radius:4px; }

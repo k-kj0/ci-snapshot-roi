@@ -69,7 +69,7 @@ export default async function ReceiptPage({ params }: Props) {
         <a href="https://www.warpbuild.com" target="_blank" rel="noreferrer">Try WarpBuild</a>
         <a className="alt" href={`https://twitter.com/intent/tweet?text=${tweet}`} target="_blank" rel="noreferrer">Share on X</a>
       </div>
-      <a className="rc-link" href="/">Print another receipt</a>
+      <a className="rc-link" href={`/m/${owner}/${repo}`}>See the migration diff</a><a className="rc-link" href="/">Print another receipt</a>
     </main>
   );
 }

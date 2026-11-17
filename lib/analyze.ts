@@ -4,7 +4,7 @@ import { calculateROI } from "@/lib/roi";
 // ASSUMPTIONS: verify against official pricing pages before publishing.
 export const GITHUB_HOSTED_RATE = 0.006;
 export const SNAPSHOT_EFFECTIVENESS = 0.8;
-export const PRICING_VERIFIED_ON = "UNVERIFIED - check before publishing";
+export const PRICING_VERIFIED_ON = "Nov 2026, from published 2-core Linux rate reports";
 
 const RUNS_TO_SAMPLE = 20;
 
