@@ -1,29 +1,33 @@
+cat > README.md <<'EOF'
 # CI Receipt
 
 **Paste a public GitHub repo. Get a receipt of its repeated CI setup time, and an honest verdict on whether CI snapshots would pay off.**
 
-Most tools tell you a new feature will save money. This one is allowed to say **SKIP**.
+Most tools tell you a feature will save money. This one is allowed to say **SKIP**.
 
-Live demo: _add your Vercel link here_  |  Demo video: _add link here_
+**Live demo:** https://ci-snapshot-roi.vercel.app
+**Demo video:** _add link here_
 
 ## What it does
 
-- **Receipt** (`/r/owner/repo`): reads real step timings from the GitHub Actions API, finds repeated setup work (dependency installs, toolchain setup, image pulls), and prices it.
-- **Verdict per workflow**: WORTH IT, SKIP, or NOT ENOUGH DATA, after counting runner minutes saved, restore fees and storage.
+- **Receipt** (`/r/owner/repo`): reads real step timings from the GitHub Actions API, finds repeated setup work (dependency installs, toolchain setup, image pulls) and prices it.
+- **Verdict per workflow:** WORTH IT, SKIP, or NOT ENOUGH DATA, after counting runner minutes saved, restore fees and storage.
 - **Migration diff** (`/m/owner/repo`): shows the exact `runs-on` lines that are safe to rewrite. Matrix, macOS, Windows and custom labels are left alone on purpose.
-- **Share loop**: every receipt has its own link and preview image.
-- **CLI**: `npm run receipt -- owner/repo`
+- **Shareable:** every receipt has its own link and preview image.
+- **CLI:** `npm run receipt -- owner/repo`
+
+## Why I built it
+
+Teams hear "this feature saves time" but can't see whether it saves money after fees. I wanted a tool that shows the real tradeoff and is willing to say "don't bother."
 
 ## How the money math works
 
-See `lib/roi.ts`.
+See `lib/roi.ts`, covered by `tests/roi.test.ts` (including cases where snapshots lose money).
 
     savings = baseline runner cost
               - (runner cost with setup removed + boot overhead)
               - restore fee per job
               - storage per snapshot-hour
-
-Covered by tests in `tests/roi.test.ts`, including cases where snapshots lose money.
 
 ## Honest limits
 
@@ -34,9 +38,15 @@ Covered by tests in `tests/roi.test.ts`, including cases where snapshots lose mo
 - Prices are list prices at the date shown on each receipt. Verify before relying on them.
 - Independent project. Not affiliated with WarpBuild or GitHub.
 
-## Run it
+## Run it locally
 
     npm install
     echo "GITHUB_TOKEN=your_token" > .env.local
     npm run dev
     npm test
+
+## Tech
+
+Next.js, TypeScript, GitHub REST API, Vitest, GitHub Actions, Vercel.
+EOF
+git add . && git commit -m "Update README with live demo" && git push origin main
