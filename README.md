@@ -1,52 +1,31 @@
-cat > README.md <<'EOF'
-# CI Receipt
+cat > app/leaderboard/page.tsx <<'EOF'
+import "../receipt.css";
 
-**Paste a public GitHub repo. Get a receipt of its repeated CI setup time, and an honest verdict on whether CI snapshots would pay off.**
+const GROUPS: Record<string, string[]> = {
+  "JavaScript / TypeScript": ["facebook/react", "vercel/next.js", "vuejs/core", "sveltejs/svelte"],
+  "Python": ["psf/requests", "pallets/flask", "django/django", "pandas-dev/pandas"],
+  "Rust and Go": ["BurntSushi/ripgrep", "tokio-rs/tokio", "junegunn/fzf", "gohugoio/hugo"],
+  "Docker-heavy": ["grafana/grafana", "home-assistant/core", "moby/moby"],
+  "Java": ["spring-projects/spring-boot", "apache/kafka"],
+  "Uses other CI (expect little data)": ["golang/go", "kubernetes/kubernetes"],
+};
 
-Most tools tell you a feature will save money. This one is allowed to say **SKIP**.
-
-**Live demo:** https://ci-snapshot-roi.vercel.app
-**Demo video:** _add link here_
-
-## What it does
-
-- **Receipt** (`/r/owner/repo`): reads real step timings from the GitHub Actions API, finds repeated setup work (dependency installs, toolchain setup, image pulls) and prices it.
-- **Verdict per workflow:** WORTH IT, SKIP, or NOT ENOUGH DATA, after counting runner minutes saved, restore fees and storage.
-- **Migration diff** (`/m/owner/repo`): shows the exact `runs-on` lines that are safe to rewrite. Matrix, macOS, Windows and custom labels are left alone on purpose.
-- **Shareable:** every receipt has its own link and preview image.
-- **CLI:** `npm run receipt -- owner/repo`
-
-## Why I built it
-
-Teams hear "this feature saves time" but can't see whether it saves money after fees. I wanted a tool that shows the real tradeoff and is willing to say "don't bother."
-
-## How the money math works
-
-See `lib/roi.ts`, covered by `tests/roi.test.ts` (including cases where snapshots lose money).
-
-    savings = baseline runner cost
-              - (runner cost with setup removed + boot overhead)
-              - restore fee per job
-              - storage per snapshot-hour
-
-## Honest limits
-
-- Public repos run free on GitHub. The receipt shows what the same workload would cost if private.
-- "Snapshots remove 80% of setup time" is an **assumption**, not a measurement.
-- Step classification is a name-matching heuristic and can misjudge custom steps.
-- Based on about 20 recent successful runs, so small samples are noisy.
-- Prices are list prices at the date shown on each receipt. Verify before relying on them.
-- Independent project. Not affiliated with WarpBuild or GitHub.
-
-## Run it locally
-
-    npm install
-    echo "GITHUB_TOKEN=your_token" > .env.local
-    npm run dev
-    npm test
-
-## Tech
-
-Next.js, TypeScript, GitHub REST API, Vitest, GitHub Actions, Vercel.
+export default function Leaderboard() {
+  return (
+    <main className="rc-home">
+      <h1>Receipts for well-known repos</h1>
+      <p>Click a repo to print its CI receipt. The first one for each repo can take up to 30 seconds.</p>
+      {Object.entries(GROUPS).map(([group, repos]) => (
+        <div key={group} style={{ textAlign: "left", marginTop: 22 }}>
+          <div className="rc-badge">{group}</div>
+          <ul className="rc-list">
+            {repos.map((r) => (<li key={r}><a href={`/r/${r}`}>{r}</a></li>))}
+          </ul>
+        </div>
+      ))}
+      <a className="rc-link" href="/">Back</a>
+    </main>
+  );
+}
 EOF
-git add . && git commit -m "Update README with live demo" && git push origin main
+npm run build && git add . && git commit -m "Leaderboard: group repos by type" && git push origin main
