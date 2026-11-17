@@ -73,3 +73,4 @@ export default async function ReceiptPage({ params }: Props) {
     </main>
   );
 }
+export const maxDuration = 60;
