@@ -1,0 +1,42 @@
+.rc-home {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 90px 24px;
+  text-align: center;
+}
+.rc-home h1 { font-size: 44px; letter-spacing: -2px; margin: 0 0 14px; }
+.rc-home p { color: var(--muted); line-height: 1.7; font-size: 14px; }
+.rc-form { display: flex; gap: 10px; margin: 30px 0 14px; }
+.rc-form input {
+  flex: 1; padding: 13px; border-radius: 8px; font-size: 13px;
+  background: #0e1512; color: var(--text); border: 1px solid var(--border);
+}
+.rc-form button {
+  padding: 13px 18px; border-radius: 8px; border: 0; cursor: pointer;
+  background: var(--green); color: #0c1710; font-weight: 700;
+}
+.rc-error { color: var(--red); font-size: 12px; margin-bottom: 10px; }
+.rc-home small { color: var(--muted); font-size: 10px; }
+.rc-page { padding: 40px 16px 70px; display: flex; flex-direction: column; align-items: center; }
+.rc-paper {
+  width: 100%; max-width: 420px; background: #f7f4ea; color: #1b1b1b;
+  padding: 30px 26px; font-family: "DM Mono", monospace; font-size: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.rc-paper hr { border: 0; border-top: 1px dashed #777; margin: 16px 0; }
+.rc-center { text-align: center; }
+.rc-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+.rc-bold { font-weight: 700; }
+.rc-dim { color: #666; font-size: 11px; margin: 2px 0; }
+.rc-step { font-size: 11px; color: #444; }
+.rc-item { margin-bottom: 18px; }
+.rc-stamp {
+  display: inline-block; margin: 10px 0 4px; padding: 3px 8px;
+  border: 2px solid; font-weight: 700; transform: rotate(-3deg);
+}
+.rc-stamp.worth-it { color: #1c7a3f; }
+.rc-stamp.skip { color: #b3372d; }
+.rc-stamp.not-enough-data { color: #8a6d1f; }
+.rc-fine { font-size: 9px; color: #666; line-height: 1.6; }
+.rc-thanks { margin-top: 14px; letter-spacing: 2px; }
+.rc-link { margin-top: 24px; color: var(--green); font-size: 13px; }
